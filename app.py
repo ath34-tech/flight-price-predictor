@@ -2,6 +2,8 @@ from flask import Flask, request, render_template
 import pickle
 import numpy as np
 import pandas as pd
+import os
+
 app = Flask(__name__)
 
 # Load the model
@@ -50,11 +52,14 @@ destination_cities = [
     "Kolkata",
     "Hyderabad"
 ]
+unsplash_access_key = os.getenv('UNSPLASH_ACCESS_KEY')
 
 # Home route
 @app.route('/')
 def home():
+
     return render_template('index.html', 
+                           unsplash_access_key=unsplash_access_key,
                            airlines=airlines, 
                            dep_arr_time=time, 
                            source_cities=source_cities,
@@ -86,6 +91,7 @@ def predict():
         prediction = model.predict(transformed_features)
         price=abs(prediction[0]) if prediction[0]<0 else prediction[0]
         return render_template('index.html', 
+                               unsplash_access_key=unsplash_access_key,
                                airlines=airlines, 
                                dep_arr_time=time, 
                                source_cities=source_cities,
@@ -93,7 +99,8 @@ def predict():
                                prediction_text=f'Predicted Flight Price: Rs.{price:.2f}')
     
     except Exception as e:
-        return render_template('index.html', 
+        return render_template('index.html',
+                               unsplash_access_key=unsplash_access_key, 
                                airlines=airlines, 
                                dep_arr_time=time, 
                                source_cities=source_cities,
